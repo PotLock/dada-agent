@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
 import { WalletSelectorProvider } from '@/contexts/WalletSelectorContext'
+import Header from '@/components/Header'
 
 const inter = Inter({ subsets: ['latin'] })
 import "@near-wallet-selector/modal-ui/styles.css";
@@ -18,9 +19,10 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={inter.className}>
+      <body className={`${inter.className} flex flex-col min-h-screen`}>
         <WalletSelectorProvider>
-          <main className="min-h-screen">
+          <Header />
+          <main className="flex-grow">
             {children}
           </main>
         </WalletSelectorProvider>
