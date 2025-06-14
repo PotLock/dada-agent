@@ -15,7 +15,7 @@ const FUND_METHODS = [
   {
     key: 'pooled-contribution',
     title: 'Pooled Contribution',
-    desc: 'Contribute to a shared DADA pool for distribution.',
+    desc: 'Contribute to a shared Funding AI pool for distribution.',
     details: 'Collaborative, scalable, collective impact.',
     icon: '💧',
     color: 'border-cyan-500 bg-cyan-50',
@@ -267,6 +267,16 @@ export default function Home() {
   const [modalOpen, setModalOpen] = useState(false);
   const [modalData, setModalData] = useState<any>(null);
   const [fundingModalOpen, setFundingModalOpen] = useState(false);
+  const [showFundingModal, setShowFundingModal] = useState(false);
+  const [showProjectModal, setShowProjectModal] = useState(false);
+  const [showCampaignModal, setShowCampaignModal] = useState(false);
+  const [selectedProject, setSelectedProject] = useState<typeof MOCK_PROJECTS[0] | null>(null);
+  const [selectedCampaign, setSelectedCampaign] = useState<typeof MOCK_CAMPAIGNS_LIST[0] | null>(null);
+  const [selectedItems, setSelectedItems] = useState<number[]>([]);
+  const [isSettingUp, setIsSettingUp] = useState(false);
+  const [setupSuccess, setSetupSuccess] = useState(false);
+  const [fundingAmount, setFundingAmount] = useState(1000);
+  const [selectedCurrency, setSelectedCurrency] = useState('NEAR');
 
   // Add a useEffect to trigger search after search state update from idea buttons
   useEffect(() => {
@@ -327,6 +337,27 @@ export default function Home() {
     } else {
       setSelectedCampaigns(prev => prev.map(() => !allSelected));
     }
+  };
+
+  const handleConfirmSetup = async () => {
+    setIsSettingUp(true);
+    // Simulate API call
+    await new Promise(resolve => setTimeout(resolve, 1500));
+    setIsSettingUp(false);
+    setSetupSuccess(true);
+    // Close modal after 2 seconds
+    setTimeout(() => {
+      setShowFundingModal(false);
+      setSetupSuccess(false);
+    }, 2000);
+  };
+
+  const handleAmountChange = (value: number) => {
+    setFundingAmount(value);
+  };
+
+  const handlePresetClick = (amount: number) => {
+    setFundingAmount(amount);
   };
 
   return (
@@ -395,7 +426,7 @@ export default function Home() {
                     <button
                       key={tab.label}
                       className={`px-4 py-1 rounded-full font-semibold text-sm transition-all duration-150 ${selectedTab === tab.label ? 'bg-white text-blue-700 shadow' : 'text-blue-400 hover:text-blue-700'}`}
-                      onClick={() => setSelectedTab(tab.label)}
+                      onClick={() => setSelectedTab(tab.label as 'project' | 'campaign')}
                     >
                       {tab.label}
                     </button>
@@ -476,7 +507,7 @@ export default function Home() {
                 className={`flex items-center gap-2 px-5 py-2 rounded-xl text-base font-semibold shadow transition-all duration-150 ${selectedCount === 0 ? 'bg-blue-200 text-white cursor-not-allowed' : 'bg-[#4F46E5] text-white hover:bg-[#4338CA]'}`}
                 style={{ minWidth: 120 }}
                 disabled={selectedCount === 0}
-                onClick={() => setFundingModalOpen(true)}
+                onClick={() => setShowFundingModal(true)}
               >
                 Fund {selectedCount} {selectedTab === 'Project' ? (selectedCount === 1 ? 'project' : 'projects') : (selectedCount === 1 ? 'campaign' : 'campaigns')} <span className="text-lg">&rarr;</span>
               </button>
@@ -486,86 +517,115 @@ export default function Home() {
       )}
 
       {/* Funding Modal */}
-      {fundingModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 p-4">
-          <div className="bg-white rounded-2xl shadow-lg border border-gray-100 max-w-lg w-full h-[80vh] flex flex-col p-8 relative">
-            <button
-              className="absolute top-4 right-4 text-3xl text-blue-500 hover:text-blue-700"
-              onClick={() => setFundingModalOpen(false)}
-              aria-label="Close"
-            >
-              &times;
-            </button>
-            {/* Target Funding section */}
-            <h2 className="text-center text-2xl font-bold mb-2">Target Funding</h2>
-            <div className="flex flex-col items-center gap-1 mb-3">
-              <input
-                type="number"
-                className="text-center text-2xl font-semibold bg-gray-50 text-blue-900 border border-gray-200 rounded-lg px-3 py-1.5 w-36 focus:outline-none focus:ring-2 focus:ring-blue-200"
-                value={goal}
-                min={PRESETS[0]}
-                max={PRESETS[PRESETS.length - 1]}
-                onChange={e => setGoal(Number(e.target.value))}
-              />
-              <span className="text-gray-500 text-xs">≈ {nearAmount} NEAR <span className="text-xxs">(@${nearRate}/NEAR)</span></span>
+      {showFundingModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-2xl p-6 max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+            <div className="flex justify-between items-center mb-6">
+              <h2 className="text-2xl font-bold text-blue-900">Setup Funding</h2>
+              <button
+                onClick={() => setShowFundingModal(false)}
+                className="text-gray-400 hover:text-gray-600"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="feather feather-x"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+              </button>
             </div>
-            <div className="flex flex-wrap justify-center gap-1.5 mb-3">
-              {PRESETS.map(preset => (
-                <button
-                  key={preset}
-                  onClick={() => setGoal(preset)}
-                  className={`px-3 py-1 rounded-full border text-sm ${goal === preset ? 'bg-[#4F46E5] text-white border-[#4F46E5]' : 'bg-gray-50 text-gray-700 border-gray-200'} transition`}
-                >
-                  ${preset.toLocaleString()}
-                </button>
-              ))}
-            </div>
-            <input
-              type="range"
-              min={PRESETS[0]}
-              max={PRESETS[PRESETS.length - 1]}
-              step={1000}
-              value={goal}
-              onChange={e => setGoal(Number(e.target.value))}
-              className="w-full accent-[#4F46E5] mb-2"
-            />
-            <div className="flex justify-between text-xs text-gray-400 mb-6">
-              {PRESETS.map(preset => (
-                <span key={preset}>${preset.toLocaleString()}</span>
-              ))}
-            </div>
-            {/* Funding Strategy section */}
-            <h3 className="text-center text-xl font-semibold mb-4">Funding Strategy</h3>
-            <div className="flex flex-col gap-2 max-h-[300px] overflow-y-auto pr-2">
-              {FUND_METHODS.map(method => (
-                <div
-                  key={method.key}
-                  onClick={() => setSelectedMethod(method.key)}
-                  className={`flex items-start gap-3 p-3 rounded-xl border-2 cursor-pointer ${selectedMethod === method.key ? 'border-primary bg-primary/10 shadow-md' : 'border-gray-200 bg-white hover:border-gray-300'} transition-all duration-150`}
-                >
-                  <span className="text-xl mt-0.5">{method.icon}</span>
-                  <div>
-                    <span className="font-semibold text-base text-gray-800 block">{method.title}</span>
-                    <span className="text-gray-600 text-sm block">{method.desc}</span>
-                    <span className="text-xs text-gray-400 block mt-0.5">{method.details}</span>
+
+            <div className="space-y-6">
+              <div>
+                <h3 className="text-2xl font-semibold text-blue-900 mb-4">Target Funding</h3>
+                <div className="flex flex-col gap-4">
+                  <div className="flex gap-4">
+                    <input
+                      type="number"
+                      value={fundingAmount}
+                      onChange={(e) => handleAmountChange(Number(e.target.value))}
+                      className="flex-1 px-4 py-2 border border-blue-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                    <select 
+                      value={selectedCurrency}
+                      onChange={(e) => setSelectedCurrency(e.target.value)}
+                      className="px-4 py-2 border border-blue-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    >
+                      <option>NEAR</option>
+                      <option>ETH</option>
+                      <option>USDC</option>
+                    </select>
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    {[100, 500, 1000, 5000].map((amount) => (
+                      <button
+                        key={amount}
+                        onClick={() => handlePresetClick(amount)}
+                        className={`px-4 py-2 rounded-lg border transition ${
+                          fundingAmount === amount 
+                            ? 'bg-blue-500 text-white border-blue-500' 
+                            : 'border-blue-200 text-blue-700 hover:bg-blue-50'
+                        }`}
+                      >
+                        ${amount.toLocaleString()}
+                      </button>
+                    ))}
+                  </div>
+                  <div className="relative">
+                    <input
+                      type="range"
+                      min="100"
+                      max="10000"
+                      step="100"
+                      value={fundingAmount}
+                      onChange={(e) => handleAmountChange(Number(e.target.value))}
+                      className="w-full h-2 bg-blue-100 rounded-lg appearance-none cursor-pointer accent-blue-500"
+                    />
+                    <div className="flex justify-between text-xs text-gray-400 mt-1">
+                      <span>$100</span>
+                      <span>$10,000</span>
+                    </div>
                   </div>
                 </div>
-              ))}
-            </div>
-            {/* Confirm Setup Button */}
-            <div className="mt-8 text-center">
-              <button
-                className="bg-[#4F46E5] text-white px-5 py-2 rounded-xl text-base font-semibold shadow transition-all duration-150 hover:bg-[#4338CA]"
-                onClick={() => {
-                  console.log('Confirming setup with:', {
-                    targetFunding: goal,
-                    fundingStrategy: selectedMethod,
-                  });
-                  setFundingModalOpen(false);
-                }}
-              >
-                Confirm Setup
-              </button>
+              </div>
+
+              <div>
+                <h3 className="text-2xl font-semibold text-blue-900 mb-4">Funding Strategy</h3>
+                <div className="space-y-3">
+                  {FUND_METHODS.map((method) => (
+                    <label key={method.key} className="flex items-center gap-3 p-4 border border-blue-200 rounded-lg hover:bg-blue-50 cursor-pointer">
+                      <input type="radio" name="strategy" className="w-4 h-4 text-blue-600" />
+                      <div className="text-2xl">{method.icon}</div>
+                      <div>
+                        <div className="font-medium text-blue-900">{method.title}</div>
+                        <div className="text-sm text-gray-500">{method.desc}</div>
+                      </div>
+                    </label>
+                  ))}
+                </div>
+              </div>
+
+              <div className="flex justify-end">
+                <button
+                  onClick={handleConfirmSetup}
+                  disabled={isSettingUp}
+                  className={`px-6 py-2 rounded-lg text-white font-medium transition ${
+                    isSettingUp ? 'bg-blue-400' : 'bg-blue-600 hover:bg-blue-700'
+                  }`}
+                >
+                  {isSettingUp ? (
+                    <div className="flex items-center gap-2">
+                      <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      </svg>
+                      Setting up...
+                    </div>
+                  ) : setupSuccess ? (
+                    <div className="flex items-center gap-2">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="feather feather-check"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                      Setup Successful!
+                    </div>
+                  ) : (
+                    'Confirm Setup'
+                  )}
+                </button>
+              </div>
             </div>
           </div>
         </div>

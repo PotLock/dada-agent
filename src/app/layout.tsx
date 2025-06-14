@@ -8,7 +8,7 @@ const inter = Inter({ subsets: ['latin'] })
 import "@near-wallet-selector/modal-ui/styles.css";
 
 export const metadata: Metadata = {
-  title: 'Dollar-A-Day Donation Agent (DADA)',
+  title: 'Funding AI',
   description: 'A fully autonomous NEAR-powered donation agent that donates $1/day to Potlock campaigns based on user preferences.',
 }
 

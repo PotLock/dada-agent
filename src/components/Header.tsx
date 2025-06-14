@@ -5,7 +5,7 @@ import { useWalletSelector } from '@/contexts/WalletSelectorContext';
 
 // const navLinks = [
 //   { name: 'Explore', href: '#' },
-//   { name: 'Why DADA', href: '#' },
+//   { name: 'Why Funding AI', href: '#' },
 //   { name: 'How It Works', href: '#' },
 //   { name: 'About', href: '#' },
 // ];

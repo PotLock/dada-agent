@@ -3,8 +3,8 @@
 import { useRouter } from 'next/navigation';
 
 const navLinks = [
-  { name: 'Explore', href: '#' },
-  { name: 'Why DADA', href: '#' },
+  { name: 'Home', href: '/' },
+  // { name: 'Why Funding AI', href: '#' },
   { name: 'How It Works', href: '#' },
   { name: 'About', href: '#' },
 ];

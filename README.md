@@ -1,4 +1,4 @@
-# 🧠 Dollar-A-Day Donation Agent (DADA)
+# 🧠 Funding AI
 
 A fully autonomous NEAR-powered donation agent that donates $1/day to Potlock campaigns based on user preferences.
 
