@@ -60,9 +60,7 @@ const SUGGESTIONS = [
   'Academic research',
   'DAO community',
   'Open source',
-  'AI agents',
   'Social impact',
-  'Near ecosystem',
   'AI agents for good',
 ];
 
