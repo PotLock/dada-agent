@@ -58,6 +58,12 @@ const SUGGESTIONS = [
   'AI agents for good',
   'Account abstraction',
   'Academic research',
+  'DAO community',
+  'Open source',
+  'AI agents',
+  'Social impact',
+  'Near ecosystem',
+  'AI agents for good',
 ];
 
 export interface SocialLink {
@@ -145,7 +151,7 @@ export default function Home() {
   const [selectedCampaigns, setSelectedCampaigns] = useState<boolean[]>([]);
   const [weightings, setWeightings] = useState<number[]>([]);
   const [selectedNetwork, setSelectedNetwork] = useState('NEAR');
-  const [selectedTab, setSelectedTab] = useState('Project');
+  const [selectedTab, setSelectedTab] = useState('All');
   const [modalOpen, setModalOpen] = useState(false);
   const [modalData, setModalData] = useState<any>(null);
   const [fundingModalOpen, setFundingModalOpen] = useState(false);
