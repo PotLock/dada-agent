@@ -52,7 +52,7 @@ const SUPPLY = [
   { label: 'Support', value: '0.5%', amount: '27K', color: 'text-purple-600', bg: 'bg-purple-50' },
 ];
 
-const SUGGESTIONS = [
+export const SUGGESTIONS = [
   'Social impact in South America',
   'Ethereum L2 ecosystem',
   'AI agents for good',
@@ -60,7 +60,30 @@ const SUGGESTIONS = [
   'Academic research',
 ];
 
-const MOCK_CAMPAIGNS = [
+export interface SocialLink {
+  type: string;
+  url: string;
+  icon: string;
+}
+
+export interface MockCampaign {
+  id: number;
+  name: string;
+  desc: string;
+  logo: string;
+  weighting: number;
+  score: number;
+}
+
+export interface MockProject extends MockCampaign {
+  socials?: SocialLink[];
+}
+
+export interface MockCampaignListItem extends MockCampaign {
+  campaignUrl?: string;
+}
+
+export const MOCK_CAMPAIGNS: MockCampaign[] = [
   {
     id: 1,
     name: 'Protocol Guild',
@@ -119,21 +142,7 @@ const MOCK_CAMPAIGNS = [
   },
 ];
 
-const NETWORKS = [
-  { label: 'NEAR', icon: '🟩', logo: (
-    <svg width="20" height="20" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg"><rect width="32" height="32" rx="16" fill="#fff"/><path d="M9.5 22.5V9.5L22.5 22.5V9.5" stroke="#00DC82" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"/></svg>
-  ) },
-  { label: 'Ethereum', icon: '🟦', logo: (
-    <svg width="20" height="20" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg"><rect width="32" height="32" rx="16" fill="#fff"/><path d="M16 6L16.2 6.6V21.6L16 22L15.8 21.6V6.6L16 6ZM16 22.8L24.8 17.2L16 26L7.2 17.2L16 22.8Z" fill="#627EEA"/></svg>
-  ) },
-];
-
-const TABS = [
-  { label: 'Project' },
-  { label: 'Campaign' },
-];
-
-const MOCK_PROJECTS = [
+export const MOCK_PROJECTS: MockProject[] = [
   { ...MOCK_CAMPAIGNS[0], socials: [
     { type: 'website', url: 'https://protocolguild.org', icon: '🌐' },
     { type: 'twitter', url: 'https://twitter.com/protocolguild', icon: '🐦' },
@@ -150,7 +159,7 @@ const MOCK_PROJECTS = [
     { type: 'website', url: 'https://gatorlabs.io', icon: '🌐' },
   ] },
 ];
-const MOCK_CAMPAIGNS_LIST = [
+export const MOCK_CAMPAIGNS_LIST: MockCampaignListItem[] = [
   { ...MOCK_CAMPAIGNS[4], campaignUrl: 'https://catherders.com/campaign' },
   { ...MOCK_CAMPAIGNS[5], campaignUrl: 'https://eip7265alliance.org/campaign' },
   { ...MOCK_CAMPAIGNS[6], campaignUrl: 'https://eipsinsight.io/campaign' },
@@ -253,43 +262,91 @@ const MOCK_DETAILS: Record<number, {
   },
 };
 
+const NETWORKS = [
+  { label: 'NEAR', icon: '🟩', logo: (
+    <svg width="20" height="20" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg"><rect width="32" height="32" rx="16" fill="#fff"/><path d="M9.5 22.5V9.5L22.5 22.5V9.5" stroke="#00DC82" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+  ) },
+  { label: 'Ethereum', icon: '🟦', logo: (
+    <svg width="20" height="20" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg"><rect width="32" height="32" rx="16" fill="#fff"/><path d="M16 6L16.2 6.6V21.6L16 22L15.8 21.6V6.6L16 6ZM16 22.8L24.8 17.2L16 26L7.2 17.2L16 22.8Z" fill="#627EEA"/></svg>
+  ) },
+];
+
+const TABS = [
+  { label: 'All' },
+  { label: 'Project' },
+  { label: 'Campaign' },
+];
+
+// Function to format social network URLs
+function formatSocialUrl(type: string, url: string): string {
+  if (!url) return '';
+  
+  // If URL already has protocol, return as is
+  if (url.startsWith('http://') || url.startsWith('https://')) {
+    return url;
+  }
+  
+  // Format based on social network type
+  switch (type.toLowerCase()) {
+    case 'twitter':
+    case 'x':
+      return url.startsWith('@') ? `https://x.com/${url.substring(1)}` : `https://x.com/${url}`;
+    case 'github':
+      return `https://github.com/${url}`;
+    case 'telegram':
+      return url.startsWith('@') ? `https://t.me/${url.substring(1)}` : `https://t.me/${url}`;
+    case 'discord':
+      return url.startsWith('discord.gg/') ? `https://${url}` : `https://discord.gg/${url}`;
+    case 'linkedin':
+      return url.startsWith('linkedin.com/') ? `https://www.${url}` : `https://www.linkedin.com/in/${url}`;
+    case 'youtube':
+      return url.startsWith('youtube.com/') ? `https://www.${url}` : `https://www.youtube.com/${url}`;
+    case 'instagram':
+      return `https://instagram.com/${url}`;
+    case 'facebook':
+      return `https://facebook.com/${url}`;
+    case 'website':
+    case 'web':
+      return url.startsWith('http') ? url : `https://${url}`;
+    default:
+      return url.startsWith('http') ? url : `https://${url}`;
+  }
+}
+
 export default function Home() {
   const [goal, setGoal] = useState(25000);
   const [selectedMethod, setSelectedMethod] = useState('crowd');
   const [search, setSearch] = useState('');
   const [showResults, setShowResults] = useState(false);
   const [isSearching, setIsSearching] = useState(false);
-  const [selectedProjects, setSelectedProjects] = useState(() => MOCK_PROJECTS.map(() => false));
-  const [selectedCampaigns, setSelectedCampaigns] = useState(() => MOCK_CAMPAIGNS_LIST.map(() => false));
-  const [weightings, setWeightings] = useState(() => MOCK_CAMPAIGNS.map(c => c.weighting));
-  const [selectedNetwork, setSelectedNetwork] = useState(NETWORKS[0].label);
-  const [selectedTab, setSelectedTab] = useState(TABS[0].label);
+  const [selectedProjects, setSelectedProjects] = useState<boolean[]>([]);
+  const [selectedCampaigns, setSelectedCampaigns] = useState<boolean[]>([]);
+  const [weightings, setWeightings] = useState<number[]>([]);
+  const [selectedNetwork, setSelectedNetwork] = useState('NEAR');
+  const [selectedTab, setSelectedTab] = useState('Project');
   const [modalOpen, setModalOpen] = useState(false);
   const [modalData, setModalData] = useState<any>(null);
   const [fundingModalOpen, setFundingModalOpen] = useState(false);
   const [showFundingModal, setShowFundingModal] = useState(false);
   const [showProjectModal, setShowProjectModal] = useState(false);
   const [showCampaignModal, setShowCampaignModal] = useState(false);
-  const [selectedProject, setSelectedProject] = useState<typeof MOCK_PROJECTS[0] | null>(null);
-  const [selectedCampaign, setSelectedCampaign] = useState<typeof MOCK_CAMPAIGNS_LIST[0] | null>(null);
+  const [selectedProject, setSelectedProject] = useState<any>(null);
+  const [selectedCampaign, setSelectedCampaign] = useState<any>(null);
   const [selectedItems, setSelectedItems] = useState<number[]>([]);
   const [isSettingUp, setIsSettingUp] = useState(false);
   const [setupSuccess, setSetupSuccess] = useState(false);
   const [fundingAmount, setFundingAmount] = useState(1000);
   const [selectedCurrency, setSelectedCurrency] = useState('NEAR');
+  const [filteredProjects, setFilteredProjects] = useState<any[]>([]);
+  const [filteredCampaigns, setFilteredCampaigns] = useState<any[]>([]);
+  const [combinedResults, setCombinedResults] = useState<any[]>([]);
+  const [selectedCombined, setSelectedCombined] = useState<boolean[]>([]);
 
-  // Add a useEffect to trigger search after search state update from idea buttons
   useEffect(() => {
     if (search && !isSearching && !showResults) {
       handleSearch();
     }
   }, [search, isSearching, showResults]);
-
-  const selectedNetworkObj = NETWORKS.find(n => n.label === selectedNetwork);
-
-  // Example NEAR conversion (replace with real API)
-  const nearRate = 2.39;
-  const nearAmount = (goal / nearRate).toFixed(2);
 
   const handleSearch = async (e?: React.FormEvent) => {
     if (e) {
@@ -302,16 +359,56 @@ export default function Home() {
     }
 
     setIsSearching(true);
-    await new Promise(resolve => setTimeout(resolve, 800));
-
-    setShowResults(true);
-    setSelectedProjects(MOCK_PROJECTS.map(() => false));
-    setSelectedCampaigns(MOCK_CAMPAIGNS_LIST.map(() => false));
-    setIsSearching(false);
+    try {
+      // Search both projects and campaigns by default
+      const response = await fetch(`/api/search?query=${encodeURIComponent(search)}&topK=20&similarityWeight=0.7&rankWeight=0.3&type=all`);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const data = await response.json();
+      const allResults = data.results || [];
+      
+      // Filter results based on type
+      const projectResults = allResults.filter((result: any) => result.type === 'project');
+      const campaignResults = allResults.filter((result: any) => result.type === 'campaign');
+      
+      // Set both filtered results
+      setFilteredProjects(projectResults);
+      setFilteredCampaigns(campaignResults);
+      
+      // Set combined results for "All" tab
+      setCombinedResults(allResults);
+      
+      // Set selected states and weightings based on current tab
+      if (selectedTab === 'All') {
+        setSelectedCombined(allResults.map(() => false));
+        setWeightings(allResults.map((item: any) => item.weighting ?? 0));
+      } else if (selectedTab === 'Project') {
+        setSelectedProjects(projectResults.map(() => false));
+        setWeightings(projectResults.map((p: any) => p.weighting ?? 0));
+      } else {
+        setSelectedCampaigns(campaignResults.map(() => false));
+        setWeightings(campaignResults.map((c: any) => c.weighting ?? 0));
+      }
+      
+      setShowResults(true);
+    } catch (error) {
+      console.error("Failed to fetch search results:", error);
+    } finally {
+      setIsSearching(false);
+    }
   };
 
+  const selectedNetworkObj = NETWORKS.find(n => n.label === selectedNetwork);
+
+  // Example NEAR conversion (replace with real API)
+  const nearRate = 2.39;
+  const nearAmount = (goal / nearRate).toFixed(2);
+
   const handleSelect = (idx: number) => {
-    if (selectedTab === 'Project') {
+    if (selectedTab === 'All') {
+      setSelectedCombined(sel => sel.map((v, i) => (i === idx ? !v : v)));
+    } else if (selectedTab === 'Project') {
       setSelectedProjects(sel => sel.map((v, i) => (i === idx ? !v : v)));
     } else {
       setSelectedCampaigns(sel => sel.map((v, i) => (i === idx ? !v : v)));
@@ -323,16 +420,22 @@ export default function Home() {
   };
 
   // Helper for pluralization
-  const selectedCount = selectedTab === 'Project' 
+  const selectedCount = selectedTab === 'All' 
+    ? selectedCombined.filter(Boolean).length 
+    : selectedTab === 'Project'
     ? selectedProjects.filter(Boolean).length 
     : selectedCampaigns.filter(Boolean).length;
   
-  const allSelected = selectedTab === 'Project'
+  const allSelected = selectedTab === 'All'
+    ? selectedCombined.every(Boolean)
+    : selectedTab === 'Project'
     ? selectedProjects.every(Boolean)
     : selectedCampaigns.every(Boolean);
 
   const handleSelectAll = () => {
-    if (selectedTab === 'Project') {
+    if (selectedTab === 'All') {
+      setSelectedCombined(prev => prev.map(() => !allSelected));
+    } else if (selectedTab === 'Project') {
       setSelectedProjects(prev => prev.map(() => !allSelected));
     } else {
       setSelectedCampaigns(prev => prev.map(() => !allSelected));
@@ -360,6 +463,22 @@ export default function Home() {
     setFundingAmount(amount);
   };
 
+  const handleTabChange = (newTab: 'All' | 'Project' | 'Campaign') => {
+    setSelectedTab(newTab);
+    
+    // Update selected states and weightings based on the new tab
+    if (newTab === 'All') {
+      setSelectedCombined(combinedResults.map(() => false));
+      setWeightings(combinedResults.map((item: any) => item.weighting ?? 0));
+    } else if (newTab === 'Project') {
+      setSelectedProjects(filteredProjects.map(() => false));
+      setWeightings(filteredProjects.map((p: any) => p.weighting ?? 0));
+    } else {
+      setSelectedCampaigns(filteredCampaigns.map(() => false));
+      setWeightings(filteredCampaigns.map((c: any) => c.weighting ?? 0));
+    }
+  };
+
   return (
     <div className="relative min-h-screen flex flex-col items-center justify-start bg-gradient-to-br from-[#f8f6ff] to-[#f3f9fa]">
       {/* Hero Section */}
@@ -368,6 +487,9 @@ export default function Home() {
           <h1 className={`text-4xl md:text-5xl font-extrabold text-center text-[#3a3a7c] mb-6 transition-all duration-700 ${showResults ? 'scale-90' : 'scale-100'}`}>
             Fund public goods like magic <span className="inline-block align-middle">✨</span>
           </h1>
+          <p className={`text-lg md:text-xl text-center text-gray-600 mb-8 transition-all duration-700 ${showResults ? 'opacity-0' : 'opacity-100'}`}>
+            Automate your contributions to impactful projects and campaigns on NEAR and beyond.
+          </p>
           <form
             className={`w-full max-w-2xl flex items-center bg-white/90 rounded-full shadow-lg px-6 py-2.5 mb-4 border border-blue-100 transition-all duration-700 ${showResults ? 'scale-90' : 'scale-100'}`}
             onSubmit={handleSearch}
@@ -426,7 +548,7 @@ export default function Home() {
                     <button
                       key={tab.label}
                       className={`px-4 py-1 rounded-full font-semibold text-sm transition-all duration-150 ${selectedTab === tab.label ? 'bg-white text-blue-700 shadow' : 'text-blue-400 hover:text-blue-700'}`}
-                      onClick={() => setSelectedTab(tab.label as 'project' | 'campaign')}
+                      onClick={() => handleTabChange(tab.label as 'All' | 'Project' | 'Campaign')}
                     >
                       {tab.label}
                     </button>
@@ -447,57 +569,51 @@ export default function Home() {
                   onChange={handleSelectAll}
                   className="w-4 h-4 rounded border-2 border-blue-200 text-blue-600 focus:ring-blue-500 cursor-pointer transition-colors duration-200"
                 />
-                <span>{selectedTab === 'Project' ? 'PROJECT' : 'CAMPAIGN'}</span>
+                <span>{selectedTab === 'All' ? 'ALL' : selectedTab === 'Project' ? 'PROJECT' : 'CAMPAIGN'}</span>
               </div>
               <div className="col-span-7"></div>
               <div className="col-span-2 text-center">WEIGHTING</div>
               <div className="col-span-2 text-center">SCORE</div>
             </div>
-            {(selectedTab === 'Project' ? MOCK_PROJECTS : MOCK_CAMPAIGNS_LIST).map((c, idx) => (
+            {(selectedTab === 'All' ? combinedResults : selectedTab === 'Project' ? filteredProjects : filteredCampaigns).map((c, idx) => (
               <div
-                key={c.id}
-                className={`grid grid-cols-12 items-center px-6 py-4 border-b last:border-b-0 border-blue-50 transition bg-white cursor-pointer ${(selectedTab === 'Project' ? selectedProjects[idx] : selectedCampaigns[idx]) ? '' : 'opacity-60'}`}
+                key={c.id || c.accountId || idx}
+                className={`grid grid-cols-12 items-center px-6 py-4 border-b last:border-b-0 border-blue-50 transition bg-white cursor-pointer ${(selectedTab === 'All' ? selectedCombined[idx] : selectedTab === 'Project' ? selectedProjects[idx] : selectedCampaigns[idx]) ? '' : 'opacity-60'}`}
                 onClick={() => {
-                  setModalData({
-                    ...c,
-                    ...MOCK_DETAILS[c.id],
-                  });
+                  setModalData(c);
                   setModalOpen(true);
                 }}
               >
                 <div className="col-span-1 flex justify-center">
                   <input
                     type="checkbox"
-                    checked={selectedTab === 'Project' ? selectedProjects[idx] : selectedCampaigns[idx]}
+                    checked={selectedTab === 'All' ? selectedCombined[idx] : selectedTab === 'Project' ? selectedProjects[idx] : selectedCampaigns[idx]}
                     onChange={e => { e.stopPropagation(); handleSelect(idx); }}
                     className="w-4 h-4 rounded border-2 border-blue-200 text-blue-600 focus:ring-blue-500 cursor-pointer transition-colors duration-200"
                     onClick={e => e.stopPropagation()}
                   />
                 </div>
                 <div className="col-span-7 flex items-center gap-4">
-                  <img src={c.logo} alt={c.name} className="w-10 h-10 rounded-full border border-blue-100 object-cover" />
+                  <img src={c.image || c.logo} alt={c.name} className="w-10 h-10 rounded-full border border-blue-100 object-cover" />
                   <div>
-                    <div className="font-bold text-blue-900 text-base mb-1">{c.name}</div>
-                    <div className="text-xs text-gray-500 truncate max-w-xs">{c.desc}</div>
+                    <div className="font-bold text-blue-900 text-base mb-1 flex items-center gap-2">
+                      {c.name}
+                      {selectedTab === 'All' && (
+                        <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${
+                          c.type === 'project' ? 'bg-blue-100 text-blue-700' : 'bg-green-100 text-green-700'
+                        }`}>
+                          {c.type === 'project' ? 'Project' : 'Campaign'}
+                        </span>
+                      )}
+                    </div>
+                    <div className="text-xs text-gray-500 truncate max-w-xs">{c.desc || c.description}</div>
                   </div>
                 </div>
-                <div className="col-span-2 flex items-center justify-center gap-2">
-                  <input
-                    type="number"
-                    min={0}
-                    max={100}
-                    step={0.01}
-                    value={weightings[idx]}
-                    onChange={e => handleWeighting(idx, Number(e.target.value))}
-                    className="w-16 px-2 py-1 rounded-md border border-blue-200 text-blue-900 text-sm text-center bg-blue-50 focus:outline-none focus:ring-2 focus:ring-blue-200"
-                    disabled={selectedTab === 'Project' ? !selectedProjects[idx] : !selectedCampaigns[idx]}
-                    onClick={e => e.stopPropagation()}
-                  />
-                  <span className="text-blue-700 font-semibold">%</span>
+                <div className="col-span-2 text-center font-semibold text-blue-900">
+                  {c.weightingScore !== undefined ? (c.weightingScore * 100).toFixed(2) + '%' : '-'}
                 </div>
-                <div className="col-span-2 flex items-center justify-center gap-2">
-                  <span className={`font-bold text-lg ${c.score >= 8 ? 'text-green-500' : c.score >= 6 ? 'text-yellow-500' : 'text-orange-500'}`}>{c.score}</span>
-                  <span className="text-gray-400">&gt;</span>
+                <div className="col-span-2 text-center font-semibold text-blue-900">
+                  {c.overallScore !== undefined ? c.overallScore.toFixed(2) : '-'}
                 </div>
               </div>
             ))}
@@ -509,7 +625,7 @@ export default function Home() {
                 disabled={selectedCount === 0}
                 onClick={() => setShowFundingModal(true)}
               >
-                Fund {selectedCount} {selectedTab === 'Project' ? (selectedCount === 1 ? 'project' : 'projects') : (selectedCount === 1 ? 'campaign' : 'campaigns')} <span className="text-lg">&rarr;</span>
+                Fund {selectedCount} {selectedTab === 'All' ? 'items' : selectedTab === 'Project' ? (selectedCount === 1 ? 'project' : 'projects') : (selectedCount === 1 ? 'campaign' : 'campaigns')} <span className="text-lg">&rarr;</span>
               </button>
             </div>
           </div>
@@ -643,40 +759,59 @@ export default function Home() {
               &times;
             </button>
             <div className="flex items-center gap-4 mb-4">
-              <img src={modalData.logo} alt={modalData.name} className="w-14 h-14 rounded-full border-2 border-blue-200 object-cover" />
+              <img src={modalData.image || modalData.logo} alt={modalData.name} className="w-14 h-14 rounded-full border-2 border-blue-200 object-cover" />
               <div>
                 <div className="text-2xl font-bold text-blue-900 flex items-center gap-2">{modalData.name}</div>
                 {/* Social/Campaign URLs */}
-                {selectedTab === 'Project' && modalData.socials && (
-                  <div className="flex gap-3 mt-2">
-                    {modalData.socials.map((s: any, i: number) => (
-                      <a key={i} href={s.url} target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:text-blue-700 text-xl" title={s.type}>
-                        {s.type === 'website' && (
-                          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="feather feather-globe">
-                            <circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
-                          </svg>
-                        )}
-                        {s.type === 'twitter' && (
-                          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="feather feather-twitter">
-                            <path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"></path>
-                          </svg>
-                        )}
-                        {s.type === 'github' && (
-                          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M29.3444 30.4767C31.7481 29.9771 33.9292 29.1109 35.6247 27.8393C38.5202 25.6677 40 22.3137 40 19C40 16.6754 39.1187 14.5051 37.5929 12.6669C36.7427 11.6426 39.2295 4.00001 37.02 5.02931C34.8105 6.05861 31.5708 8.33691 29.8726 7.8341C28.0545 7.29577 26.0733 7.00001 24 7.00001C22.1992 7.00001 20.4679 7.22313 18.8526 7.63452C16.5046 8.23249 14.2591 6.00001 12 5.02931C9.74086 4.05861 10.9736 11.9633 10.3026 12.7946C8.84119 14.6052 8 16.7289 8 19C8 22.3137 9.79086 25.6677 12.6863 27.8393C14.6151 29.2858 17.034 30.2077 19.7401 30.6621"/>
-                            <path d="M19.7402 30.662C18.5817 31.9372 18.0024 33.148 18.0024 34.2946C18.0024 35.4411 18.0024 38.3465 18.0024 43.0108"/>
-                            <path d="M29.3443 30.4767C30.4421 31.9175 30.991 33.2112 30.991 34.3577C30.991 35.5043 30.991 38.3886 30.991 43.0108"/>
-                            <path d="M6 31.2156C6.89887 31.3255 7.56554 31.7388 8 32.4555C8.65169 33.5304 11.0742 37.5181 13.8251 37.5181C15.6591 37.5181 17.0515 37.5181 18.0024 37.5181"/>
-                          </svg>
-                        )}
-                      </a>
+                {modalData.socialUrl && typeof modalData.socialUrl === 'object' && (
+                  <div className="flex gap-2 mt-1">
+                    {Object.entries(modalData.socialUrl).map(([type, url]) => (
+                      typeof url === 'string' && url ? (
+                        <a
+                          key={type}
+                          href={formatSocialUrl(type, url)}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-blue-500 hover:text-blue-700 text-xl"
+                          title={type.charAt(0).toUpperCase() + type.slice(1)}
+                        >
+                          {type === 'twitter' && (
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="feather feather-twitter"><path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"></path></svg>
+                          )}
+                          {type === 'github' && (
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="feather feather-github"><path d="M12 2C6.48 2 2 6.58 2 12.26c0 4.5 2.87 8.32 6.84 9.67.5.09.68-.22.68-.48 0-.24-.01-.87-.01-1.7-2.78.62-3.37-1.36-3.37-1.36-.45-1.18-1.1-1.5-1.1-1.5-.9-.63.07-.62.07-.62 1 .07 1.53 1.05 1.53 1.05.89 1.56 2.34 1.11 2.91.85.09-.66.35-1.11.63-1.37-2.22-.26-4.56-1.14-4.56-5.07 0-1.12.39-2.03 1.03-2.75-.1-.26-.45-1.3.1-2.7 0 0 .84-.28 2.75 1.05A9.38 9.38 0 0 1 12 6.84c.85.004 1.71.12 2.51.35 1.91-1.33 2.75-1.05 2.75-1.05.55 1.4.2 2.44.1 2.7.64.72 1.03 1.63 1.03 2.75 0 3.94-2.34 4.81-4.57 5.07.36.32.68.94.68 1.9 0 1.37-.01 2.47-.01 2.81 0 .27.18.58.69.48A10.01 10.01 0 0 0 22 12.26C22 6.58 17.52 2 12 2z"></path></svg>
+                          )}
+                          {type === 'website' && (
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="feather feather-globe"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
+                          )}
+                          {type === 'telegram' && (
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="feather feather-telegram">
+                              <path d="M22 2L11 13"/>
+                              <path d="M22 2L15 22L11 13L2 9L22 2Z"/>
+                            </svg>
+                          )}
+                          {type !== 'twitter' && type !== 'github' && type !== 'website' && type !== 'telegram' && <span>{type.charAt(0).toUpperCase()}</span>}
+                        </a>
+                      ) : null
                     ))}
                   </div>
                 )}
-                {selectedTab === 'Campaign' && modalData.campaignUrl && (
+                {/* Campaign URL */}
+                {modalData.campaignUrl && (
                   <div className="mt-2">
-                    <a href={modalData.campaignUrl} target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:text-blue-700 underline font-medium text-base">
-                      View Campaign ↗
+                    <a
+                      href={modalData.campaignUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium"
+                      title="View Campaign on Potlock"
+                    >
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="feather feather-external-link">
+                        <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                        <polyline points="15 3 21 3 21 9"></polyline>
+                        <line x1="10" y1="14" x2="21" y2="3"></line>
+                      </svg>
+                      View Campaign
                     </a>
                   </div>
                 )}
@@ -687,24 +822,29 @@ export default function Home() {
             </div>
             <div className="bg-blue-50/60 rounded-xl p-4">
               <div className="flex items-center gap-2 mb-2">
-                <span className="font-bold text-blue-900 text-lg">Score</span>
+                <span className="font-bold text-blue-900 text-lg">WEIGHTING</span>
                 <span className="inline-flex items-center px-2 py-0.5 rounded-full border border-blue-200 bg-white text-blue-700 font-semibold text-base ml-2">
-                  <svg className="w-5 h-5 mr-1" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M4 12l6 6L20 6" /></svg>
-                  {modalData.score}
+                  {modalData.weightingScore !== undefined ? (modalData.weightingScore * 100).toFixed(2) + '%' : '-'}
+                </span>
+              </div>
+              <div className="flex items-center gap-2 mb-2">
+                <span className="font-bold text-blue-900 text-lg">SCORE</span>
+                <span className="inline-flex items-center px-2 py-0.5 rounded-full border border-blue-200 bg-white text-blue-700 font-semibold text-base ml-2">
+                  {modalData.overallScore !== undefined ? modalData.overallScore.toFixed(2) : '-'}
                 </span>
               </div>
               <div className="grid grid-cols-3 gap-4 mt-2">
                 <div className="rounded-xl border border-blue-200 p-4 text-center">
                   <div className="text-xs text-blue-400 font-semibold mb-1">RELEVANCE</div>
-                  <div className="text-xl font-bold text-blue-900">{modalData.breakdown?.relevance?.toFixed(2)}/10</div>
+                  <div className="text-xl font-bold text-blue-900">{modalData.evaluationScores?.relevance !== undefined ? modalData.evaluationScores.relevance.toFixed(2) : '-'} /10</div>
                 </div>
                 <div className="rounded-xl border border-blue-200 p-4 text-center">
                   <div className="text-xs text-blue-400 font-semibold mb-1">IMPACT</div>
-                  <div className="text-xl font-bold text-blue-900">{modalData.breakdown?.impact?.toFixed(2)}/10</div>
+                  <div className="text-xl font-bold text-blue-900">{modalData.evaluationScores?.impact !== undefined ? modalData.evaluationScores.impact.toFixed(2) : '-'} /10</div>
                 </div>
                 <div className="rounded-xl border border-blue-200 p-4 text-center">
                   <div className="text-xs text-blue-400 font-semibold mb-1">FUNDING NEEDS</div>
-                  <div className="text-xl font-bold text-blue-900">{modalData.breakdown?.funding?.toFixed(2)}/10</div>
+                  <div className="text-xl font-bold text-blue-900">{modalData.evaluationScores?.funding !== undefined ? modalData.evaluationScores.funding.toFixed(2) : '-'} /10</div>
                 </div>
               </div>
             </div>
