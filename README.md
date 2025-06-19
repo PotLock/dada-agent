@@ -1,4 +1,4 @@
-# 🧠 Dada Agent - Intelligent Funding Platform
+# 🧠 Funding AI - Intelligent Funding Platform
 
 A sophisticated AI-powered funding platform that intelligently matches donors with impactful projects and campaigns on the NEAR blockchain. The platform uses advanced search algorithms, vector similarity, and LLM-based evaluation to provide personalized funding recommendations.
 
@@ -99,7 +99,7 @@ The platform automatically formats social media URLs:
 ## 📁 Project Structure
 
 ```
-dada-agent/
+funding-ai/
 ├── src/
 │   ├── app/
 │   │   ├── api/
@@ -132,8 +132,8 @@ dada-agent/
 
 1. **Clone the repository**:
    ```bash
-   git clone https://github.com/yourusername/dada-agent.git
-   cd dada-agent
+   git clone https://github.com/yourusername/funding-ai.git
+   cd funding-ai
    ```
 
 2. **Install dependencies**:
