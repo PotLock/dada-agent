@@ -343,10 +343,10 @@ export async function GET(request: Request) {
       const scores = await scoreEvaluationReport(report);
       // Compute overall score (weighted average, you can adjust weights)
       const overallScore = (scores.relevance + scores.impact + scores.funding) / 3;
-      return {
-        ...metadata,
+        return {
+          ...metadata,
         rerankScore: r.rerankScore,
-        similarityScore,
+          similarityScore,
         weightingScore,
         type: r.type,
         report,
