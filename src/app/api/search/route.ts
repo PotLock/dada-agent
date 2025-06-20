@@ -141,12 +141,40 @@ async function getCampaignDocumentsFromContract(): Promise<Document[]> {
 
   console.log(`Total campaigns fetched: ${campaignList.length}`);
 
+  // Fetch recipient profile images in parallel
+  const campaignsWithRecipientImage = await Promise.all(
+    campaignList.map(async (campaign) => {
+      let recipient_image = '';
+      if (campaign.recipient) {
+        try {
+          const profileRes = await provider.query({
+            request_type: "call_function",
+            account_id: SOCIAL_CONTRACT_ID,
+            method_name: "get",
+            args_base64: Buffer.from(JSON.stringify({ keys: [`${campaign.recipient}/profile/**`] })).toString("base64"),
+            finality: "optimistic",
+          }) as any;
+          const profileJson = JSON.parse(Buffer.from(profileRes.result).toString());
+          const profileKey = Object.keys(profileJson)[0];
+          const profile = profileJson[profileKey]?.profile;
+          if (profile?.image?.ipfs_cid) {
+            recipient_image = `https://ipfs.near.social/ipfs/${profile.image.ipfs_cid}`;
+          }
+        } catch (e) {
+          // ignore if not found
+        }
+      }
+      return { ...campaign, recipient_image };
+    })
+  );
+
   // Build Document objects for each campaign
-  return campaignList.map((campaign) => {
+  return campaignsWithRecipientImage.map((campaign) => {
     const pageContent = [
       typeof campaign.name === 'string' ? campaign.name : '',
       typeof campaign.description === 'string' ? campaign.description : '',
-      typeof campaign.recipient === 'string' ? campaign.recipient : '',
+      typeof campaign.recipient === 'string' ? `Recipient: ${campaign.recipient}` : '',
+      typeof campaign.owner === 'string' ? `Owner: ${campaign.owner}` : '',
       typeof campaign.cover_image_url === 'string' ? campaign.cover_image_url : '',
       typeof campaign.target_amount === 'string' ? `Target: ${campaign.target_amount}` : '',
       typeof campaign.total_raised_amount === 'string' ? `Raised: ${campaign.total_raised_amount}` : '',
@@ -155,6 +183,10 @@ async function getCampaignDocumentsFromContract(): Promise<Document[]> {
       pageContent,
       metadata: { 
         ...campaign,
+        owner: campaign.owner,
+        recipient: campaign.recipient,
+        recipient_image: campaign.recipient_image,
+        image: campaign.recipient_image || '',
         campaignUrl: `https://staging.alpha.potlock.org/campaign/${campaign.id}`
       }
     });

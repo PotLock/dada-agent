@@ -24,25 +24,40 @@ export default function Header() {
   };
 
   return (
-    <header className="w-full flex justify-end px-6 py-4 fixed top-0 right-0 z-20">
-      <div className="flex items-center gap-4">
+    <header className="w-full flex justify-end px-3 sm:px-4 md:px-6 py-2 sm:py-3 md:py-4 fixed top-0 right-0 z-20">
+      <div className="flex items-center gap-2 sm:gap-3 md:gap-4">
         {accountId ? (
           <button
             onClick={handleSignOut}
-            className="flex items-center gap-2 bg-blue-50/60 text-blue-800 px-4 py-2 rounded-full font-medium border border-blue-100 hover:bg-red-50 hover:border-red-200 hover:text-red-700 transition-colors cursor-pointer shadow-sm"
+            className="flex items-center gap-1.5 sm:gap-2 bg-gray-800/90 backdrop-blur-md text-white px-2.5 sm:px-3 md:px-4 py-2 sm:py-2.5 md:py-3 rounded-full font-medium border border-gray-600/50 hover:bg-red-900/30 hover:border-red-400 hover:text-red-200 transition-all duration-200 cursor-pointer shadow-lg hover:shadow-xl active:scale-95 min-h-[44px] sm:min-h-[48px]"
             title="Disconnect Wallet"
           >
-            <span className="text-sm">
-              {accountId.substring(0, 6)}...{accountId.substring(accountId.length - 4)}
+            <span className="text-xs sm:text-sm md:text-base font-medium truncate max-w-[60px] sm:max-w-[80px] md:max-w-none">
+              {accountId.substring(0, 3)}...{accountId.substring(accountId.length - 3)}
             </span>
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" className="w-5 h-5"><path strokeLinecap="round" strokeLinejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l3 3m0 0l-3 3m3-3H9" /></svg>
+            <svg 
+              xmlns="http://www.w3.org/2000/svg" 
+              fill="none" 
+              viewBox="0 0 24 24" 
+              strokeWidth="2" 
+              stroke="currentColor" 
+              className="w-3.5 h-3.5 sm:w-4 sm:h-4 md:w-5 md:h-5 flex-shrink-0"
+            >
+              <path 
+                strokeLinecap="round" 
+                strokeLinejoin="round" 
+                d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l3 3m0 0l-3 3m3-3H9" 
+              />
+            </svg>
           </button>
         ) : (
           <button
             onClick={handleSignIn}
-            className="bg-[#4F46E5] text-white px-6 py-3 rounded-full hover:bg-[#4338CA] transition-colors text-base font-semibold shadow-md"
+            className="bg-indigo-600 text-white px-3 sm:px-4 md:px-6 py-2.5 sm:py-3 md:py-3.5 rounded-full hover:bg-indigo-700 active:bg-indigo-800 transition-all duration-200 text-sm sm:text-base font-semibold shadow-lg hover:shadow-xl active:shadow-inner transform hover:scale-105 active:scale-95 min-h-[44px] sm:min-h-[48px] flex items-center justify-center"
           >
-            Connect Wallet
+            <span className="hidden md:inline">Connect Wallet</span>
+            <span className="hidden sm:inline md:hidden">Connect</span>
+            <span className="sm:hidden">Connect</span>
           </button>
         )}
       </div>

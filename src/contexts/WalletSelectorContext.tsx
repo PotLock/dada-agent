@@ -6,6 +6,7 @@ import { setupModal } from "@near-wallet-selector/modal-ui";
 import { setupMyNearWallet } from "@near-wallet-selector/my-near-wallet";
 import { setupSender } from "@near-wallet-selector/sender";
 import { setupWalletConnect } from "@near-wallet-selector/wallet-connect";
+import { setupMeteorWallet } from "@near-wallet-selector/meteor-wallet";
 import type { WalletSelector, AccountState } from "@near-wallet-selector/core";
 import type { WalletSelectorModal } from "@near-wallet-selector/modal-ui";
 
@@ -43,6 +44,9 @@ export function WalletSelectorProvider({ children }: { children: React.ReactNode
         modules: [
           setupMyNearWallet(),
           setupSender(),
+          // WORKAROUND for version mismatch in @near-wallet-selector packages.
+          // This may cause runtime errors. Aligning versions is recommended.
+          setupMeteorWallet() as any,
         ],
       });
 

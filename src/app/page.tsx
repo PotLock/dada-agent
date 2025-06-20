@@ -216,7 +216,7 @@ export default function Home() {
         setSelectedCampaigns(campaignResults.map(() => false));
         setWeightings(campaignResults.map((c: any) => c.weighting ?? 0));
       }
-      
+
       setShowResults(true);
     } catch (error) {
       console.error("Failed to fetch search results:", error);
@@ -305,24 +305,33 @@ export default function Home() {
     }
   };
 
+  useEffect(() => {
+    if (!modalOpen) return;
+    const handleEsc = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setModalOpen(false);
+    };
+    window.addEventListener('keydown', handleEsc);
+    return () => window.removeEventListener('keydown', handleEsc);
+  }, [modalOpen]);
+
   return (
-    <div className="relative min-h-screen flex flex-col items-center justify-start bg-gradient-to-br from-[#f8f6ff] to-[#f3f9fa]">
+    <div className="relative min-h-screen flex flex-col items-center justify-start bg-gradient-to-br from-pink-50 via-pink-100 to-pink-200 overflow-x-hidden pb-8">
       {/* Hero Section */}
-      <section className={`w-full flex flex-col items-center justify-center bg-gradient-to-b from-[#e7eaff] to-transparent transition-all duration-700 ${showResults ? 'pt-12 pb-8' : 'h-screen'}`}>
-        <div className={`flex flex-col items-center transition-all duration-700 ${showResults ? 'mt-0 scale-90' : 'mt-[-10vh] scale-100'}`}>
-          <h1 className={`text-4xl md:text-5xl font-extrabold text-center text-[#3a3a7c] mb-6 transition-all duration-700 ${showResults ? 'scale-90' : 'scale-100'}`}>
-            Fund public goods like magic <span className="inline-block align-middle">✨</span>
+      <section className={`w-full flex flex-col items-center justify-center bg-gradient-to-b from-pink-100 to-transparent transition-all duration-700 px-4 ${showResults ? 'pt-24 sm:pt-20 pb-6' : 'h-screen'}`}>
+        <div className={`flex flex-col items-center transition-all duration-700 w-full max-w-2xl ${showResults ? 'mt-0 scale-90' : 'mt-[-10vh] scale-100'}`}>
+          <h1 className={`text-3xl sm:text-4xl md:text-5xl font-extrabold text-center text-pink-900 mb-4 sm:mb-6 transition-all duration-700 leading-tight ${showResults ? 'scale-90' : 'scale-100'}`}>
+            AI-Powered Donations, Real-World Impact <span className="inline-block align-middle">🤖</span>
           </h1>
-          <p className={`text-lg md:text-xl text-center text-gray-600 mb-8 transition-all duration-700 ${showResults ? 'opacity-0' : 'opacity-100'}`}>
+          <p className={`text-base sm:text-lg md:text-xl text-center text-pink-800 mb-6 sm:mb-8 px-4 transition-all duration-700 leading-relaxed ${showResults ? 'opacity-0' : 'opacity-100'}`}>
             Automate your contributions to impactful projects and campaigns on NEAR and beyond.
           </p>
           <form
-            className={`w-full max-w-2xl flex items-center bg-white/90 rounded-full shadow-lg px-6 py-2.5 mb-4 border border-blue-100 transition-all duration-700 ${showResults ? 'scale-90' : 'scale-100'}`}
+            className={`w-full flex items-center bg-pink-100/90 rounded-full shadow-lg px-4 sm:px-6 py-3 sm:py-2.5 mb-4 border border-pink-200 transition-all duration-700 ${showResults ? 'scale-90' : 'scale-100'}`}
             onSubmit={handleSearch}
           >
             <input
               type="text"
-              className="flex-1 bg-transparent outline-none text-lg md:text-xl placeholder:text-blue-300"
+              className="flex-1 bg-transparent outline-none text-base sm:text-lg md:text-xl placeholder:text-pink-400 text-pink-900 min-w-0"
               placeholder="What would you like to fund?"
               value={search}
               onChange={e => setSearch(e.target.value)}
@@ -330,11 +339,11 @@ export default function Home() {
             <button
               type="submit"
               disabled={isSearching}
-              className={`ml-4 bg-blue-500 hover:bg-blue-600 text-white rounded-full w-9 h-9 flex items-center justify-center text-2xl transition ${isSearching ? 'opacity-75 cursor-not-allowed' : ''}`}
+              className={`ml-3 sm:ml-4 bg-pink-300 hover:bg-pink-400 text-pink-900 rounded-full w-10 h-10 sm:w-9 sm:h-9 flex items-center justify-center transition ${isSearching ? 'opacity-75 cursor-not-allowed' : ''}`}
               aria-label="Search"
             >
               {isSearching ? (
-                <svg className="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <svg className="animate-spin h-4 w-4 text-pink-900" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                   <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                   <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                 </svg>
@@ -346,12 +355,12 @@ export default function Home() {
             </button>
           </form>
           {!showResults && (
-            <div className={`w-full max-w-2xl flex flex-wrap gap-2 justify-center items-center transition-all duration-700 ${showResults ? 'opacity-0 scale-90' : 'opacity-100 scale-100'}`}>
-              <span className="text-base text-blue-700 font-medium mr-2">Some ideas:</span>
+            <div className={`w-full flex flex-wrap gap-2 justify-center items-center transition-all duration-700 px-2 ${showResults ? 'opacity-0 scale-90' : 'opacity-100 scale-100'}`}>
+              <span className="text-sm sm:text-base text-pink-800 font-medium mr-2">Some ideas:</span>
               {SUGGESTIONS.map((idea, idx) => (
                 <button
                   key={idea}
-                  className="bg-blue-500/90 hover:bg-blue-600 text-white rounded-full px-4 py-1.5 text-sm font-semibold shadow transition"
+                  className="bg-pink-200 hover:bg-pink-300 text-pink-900 rounded-full px-3 sm:px-4 py-1.5 text-xs sm:text-sm font-semibold shadow transition"
                   onClick={() => setSearch(idea)}
                 >
                   {idea}
@@ -364,17 +373,16 @@ export default function Home() {
 
       {/* Results Section */}
       {showResults && (
-        <section className={`w-full max-w-3xl mx-auto mt-4 transition-all duration-700`}>
-          <div className={`mb-3 flex flex-col md:flex-row md:items-center md:justify-between gap-2 transition-all duration-700 ${showResults ? 'opacity-100 scale-100' : 'opacity-0 scale-95'}`}>
-            <div className="text-lg font-semibold text-blue-900">Results for <span className="font-bold">{search}</span></div>
-            <div className="flex items-center gap-4">
-              <div className="flex items-center gap-2">
-                <div className="flex rounded-full bg-blue-50 p-1 border border-blue-100">
+        <section className={`w-full max-w-3xl mx-auto mt-4 px-4 transition-all duration-700 flex-1 flex flex-col`}>
+          <div className={`mb-3 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 transition-all duration-700 ${showResults ? 'opacity-100 scale-100' : 'opacity-0 scale-95'}`}>
+            <div className="text-base sm:text-lg font-semibold text-pink-900">Results for <span className="font-bold">{search}</span></div>
+            <div className="flex items-center justify-center sm:justify-end">
+              <div className="flex rounded-full bg-pink-100 p-1 border border-pink-200">
                   {TABS.map(tab => (
                     <button
                       key={tab.label}
-                      className={`px-4 py-1 rounded-full font-semibold text-sm transition-all duration-150 ${selectedTab === tab.label ? 'bg-white text-blue-700 shadow' : 'text-blue-400 hover:text-blue-700'}`}
-                      onClick={() => handleTabChange(tab.label as 'All' | 'Project' | 'Campaign')}
+                    className={`px-3 sm:px-4 py-1.5 rounded-full font-semibold text-xs sm:text-sm transition-all duration-150 ${selectedTab === tab.label ? 'bg-pink-200 text-pink-900 shadow' : 'text-pink-700 hover:text-pink-900'}`}
+                    onClick={() => handleTabChange(tab.label as 'All' | 'Project' | 'Campaign')}
                     >
                       {tab.label}
                     </button>
@@ -382,18 +390,18 @@ export default function Home() {
                 </div>
               </div>
             </div>
-          </div>
-          <div className={`mb-3 p-3 bg-blue-50/60 border border-blue-100 rounded-xl text-blue-900 text-base transition-all duration-700 ${showResults ? 'opacity-100 scale-100' : 'opacity-0 scale-95'}`}>
+          <div className={`mb-3 p-3 sm:p-4 bg-pink-100/60 border border-pink-200 rounded-xl text-pink-800 text-sm sm:text-base transition-all duration-700 ${showResults ? 'opacity-100 scale-100' : 'opacity-0 scale-95'}`}>
             Take a moment to review the allocation strategy and make adjustments before moving forward with your donation. Be sure to select projects and campaigns that align with your funding goals.
           </div>
-          <div className={`bg-white/90 rounded-2xl shadow-lg border border-blue-100 overflow-hidden transition-all duration-700 ${showResults ? 'opacity-100 scale-100' : 'opacity-0 scale-95'}`}>
-            <div className="grid grid-cols-12 items-center px-6 py-3 border-b border-blue-100 text-xs font-semibold text-blue-700">
+          <div className={`bg-white rounded-2xl shadow-lg border border-pink-200 overflow-hidden transition-all duration-700 flex-1 flex flex-col ${showResults ? 'opacity-100 scale-100' : 'opacity-0 scale-95'}`}>
+            {/* Mobile-friendly table header */}
+            <div className="hidden sm:grid sm:grid-cols-12 items-center px-4 sm:px-6 py-3 border-b border-pink-200 text-xs font-semibold text-pink-800">
               <div className="col-span-1 flex items-center gap-2">
                 <input
                   type="checkbox"
                   checked={allSelected}
                   onChange={handleSelectAll}
-                  className="w-4 h-4 rounded border-2 border-blue-200 text-blue-600 focus:ring-blue-500 cursor-pointer transition-colors duration-200"
+                  className="w-4 h-4 rounded border-2 border-pink-500 text-pink-600 focus:ring-pink-500 cursor-pointer transition-colors duration-200"
                 />
                 <span>{selectedTab === 'All' ? 'ALL' : selectedTab === 'Project' ? 'PROJECT' : 'CAMPAIGN'}</span>
               </div>
@@ -401,53 +409,111 @@ export default function Home() {
               <div className="col-span-2 text-center">WEIGHTING</div>
               <div className="col-span-2 text-center">SCORE</div>
             </div>
-            {(selectedTab === 'All' ? combinedResults : selectedTab === 'Project' ? filteredProjects : filteredCampaigns).map((c, idx) => (
+            
+            {/* Mobile-friendly results list */}
+            <div className="sm:hidden flex-1 overflow-y-auto">
+              {(selectedTab === 'All' ? combinedResults : selectedTab === 'Project' ? filteredProjects : filteredCampaigns).map((c, idx) => (
               <div
-                key={c.id || c.accountId || idx}
-                className={`grid grid-cols-12 items-center px-6 py-4 border-b last:border-b-0 border-blue-50 transition bg-white cursor-pointer ${(selectedTab === 'All' ? selectedCombined[idx] : selectedTab === 'Project' ? selectedProjects[idx] : selectedCampaigns[idx]) ? '' : 'opacity-60'}`}
+                  key={c.id || c.accountId || idx}
+                  className={`p-4 border-b last:border-b-0 border-pink-100 transition bg-pink-100 cursor-pointer hover:bg-pink-50 ${(selectedTab === 'All' ? selectedCombined[idx] : selectedTab === 'Project' ? selectedProjects[idx] : selectedCampaigns[idx]) ? 'bg-pink-50' : 'opacity-60'}`}
+                  onClick={() => {
+                    setModalData(c);
+                    setModalOpen(true);
+                  }}
+                >
+                  <div className="flex items-start gap-3">
+                    <div className="flex-shrink-0">
+                      <input
+                        type="checkbox"
+                        checked={selectedTab === 'All' ? selectedCombined[idx] : selectedTab === 'Project' ? selectedProjects[idx] : selectedCampaigns[idx]}
+                        onChange={e => { e.stopPropagation(); handleSelect(idx); }}
+                        className="w-5 h-5 rounded border-2 border-pink-500 text-pink-600 focus:ring-pink-500 cursor-pointer transition-colors duration-200"
+                        onClick={e => e.stopPropagation()}
+                      />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 mb-2">
+                        <img src={c.image || c.logo} alt={c.name} className="w-12 h-12 rounded-full border border-pink-200 object-cover flex-shrink-0" />
+                        <div className="flex-1 min-w-0">
+                          <div className="font-bold text-pink-900 text-base mb-1 flex items-center gap-2">
+                            <span className="truncate">{c.name}</span>
+                            {selectedTab === 'All' && (
+                              <span className={`px-2 py-0.5 rounded-full text-xs font-medium flex-shrink-0 ${c.type === 'project' ? 'bg-pink-100 text-pink-800' : 'bg-pink-200 text-pink-900'}`}>
+                                {c.type === 'project' ? 'Project' : 'Campaign'}
+                              </span>
+                            )}
+                          </div>
+                          <div className="text-xs text-pink-500 truncate">{c.desc || c.description}</div>
+                        </div>
+                      </div>
+                      <div className="flex justify-between items-center mt-3">
+                        <div className="text-center">
+                          <div className="text-xs text-pink-500 font-medium">WEIGHTING</div>
+                          <div className="text-sm font-semibold text-pink-900">
+                            {c.weightingScore !== undefined ? (c.weightingScore * 100).toFixed(1) : '-'}
+                          </div>
+                        </div>
+                        <div className="text-center">
+                          <div className="text-xs text-pink-500 font-medium">SCORE</div>
+                          <div className="text-sm font-semibold text-pink-900">
+                            {c.overallScore !== undefined ? c.overallScore.toFixed(1) : '-'}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Desktop table view */}
+            <div className="hidden sm:block flex-1 overflow-y-auto">
+              {(selectedTab === 'All' ? combinedResults : selectedTab === 'Project' ? filteredProjects : filteredCampaigns).map((c, idx) => (
+                <div
+                  key={c.id || c.accountId || idx}
+                  className={`grid grid-cols-12 items-center px-4 sm:px-6 py-4 border-b last:border-b-0 border-pink-100 transition bg-pink-100 cursor-pointer hover:bg-pink-50 ${(selectedTab === 'All' ? selectedCombined[idx] : selectedTab === 'Project' ? selectedProjects[idx] : selectedCampaigns[idx]) ? 'bg-pink-50' : 'opacity-60'}`}
                 onClick={() => {
-                  setModalData(c);
+                    setModalData(c);
                   setModalOpen(true);
                 }}
               >
                 <div className="col-span-1 flex justify-center">
                   <input
                     type="checkbox"
-                    checked={selectedTab === 'All' ? selectedCombined[idx] : selectedTab === 'Project' ? selectedProjects[idx] : selectedCampaigns[idx]}
+                      checked={selectedTab === 'All' ? selectedCombined[idx] : selectedTab === 'Project' ? selectedProjects[idx] : selectedCampaigns[idx]}
                     onChange={e => { e.stopPropagation(); handleSelect(idx); }}
-                    className="w-4 h-4 rounded border-2 border-blue-200 text-blue-600 focus:ring-blue-500 cursor-pointer transition-colors duration-200"
+                      className="w-4 h-4 rounded border-2 border-pink-500 text-pink-600 focus:ring-pink-500 cursor-pointer transition-colors duration-200"
                     onClick={e => e.stopPropagation()}
                   />
                 </div>
                 <div className="col-span-7 flex items-center gap-4">
-                  <img src={c.image || c.logo} alt={c.name} className="w-10 h-10 rounded-full border border-blue-100 object-cover" />
-                  <div>
-                    <div className="font-bold text-blue-900 text-base mb-1 flex items-center gap-2">
-                      {c.name}
-                      {selectedTab === 'All' && (
-                        <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${
-                          c.type === 'project' ? 'bg-blue-100 text-blue-700' : 'bg-green-100 text-green-700'
-                        }`}>
-                          {c.type === 'project' ? 'Project' : 'Campaign'}
-                        </span>
-                      )}
+                    <img src={c.image || c.logo} alt={c.name} className="w-10 h-10 rounded-full border border-pink-200 object-cover" />
+                    <div className="min-w-0 flex-1">
+                      <div className="font-bold text-pink-900 text-base mb-1 flex items-center gap-2">
+                        <span className="truncate">{c.name}</span>
+                        {selectedTab === 'All' && (
+                          <span className={`px-2 py-0.5 rounded-full text-xs font-medium flex-shrink-0 ${c.type === 'project' ? 'bg-pink-100 text-pink-800' : 'bg-pink-200 text-pink-900'}`}>
+                            {c.type === 'project' ? 'Project' : 'Campaign'}
+                          </span>
+                        )}
+                      </div>
+                      <div className="text-xs text-pink-500 truncate">{c.desc || c.description}</div>
                     </div>
-                    <div className="text-xs text-gray-500 truncate max-w-xs">{c.desc || c.description}</div>
                   </div>
+                  <div className="col-span-2 text-center font-semibold text-pink-900">
+                    {c.weightingScore !== undefined ? (c.weightingScore * 100).toFixed(2) + '%' : '-'}
                 </div>
-                <div className="col-span-2 text-center font-semibold text-blue-900">
-                  {c.weightingScore !== undefined ? (c.weightingScore * 100).toFixed(2) + '%' : '-'}
+                  <div className="col-span-2 text-center font-semibold text-pink-900">
+                    {c.overallScore !== undefined ? c.overallScore.toFixed(2) : '-'}
                 </div>
-                <div className="col-span-2 text-center font-semibold text-blue-900">
-                  {c.overallScore !== undefined ? c.overallScore.toFixed(2) : '-'}
                 </div>
+              ))}
               </div>
-            ))}
+
             {/* Fund button at the bottom */}
-            <div className="flex justify-end px-6 py-4 bg-white border-t border-blue-100">
+            <div className="flex justify-center sm:justify-end px-4 sm:px-6 py-4 bg-pink-100 border-t border-pink-200 flex-shrink-0">
               <button
-                className={`flex items-center gap-2 px-5 py-2 rounded-xl text-base font-semibold shadow transition-all duration-150 ${selectedCount === 0 ? 'bg-blue-200 text-white cursor-not-allowed' : 'bg-[#4F46E5] text-white hover:bg-[#4338CA]'}`}
-                style={{ minWidth: 120 }}
+                className={`flex items-center gap-2 px-6 py-3 sm:px-5 sm:py-2 rounded-xl text-base font-semibold shadow transition-all duration-150 w-full sm:w-auto justify-center ${selectedCount === 0 ? 'bg-pink-100 text-pink-300 cursor-not-allowed' : 'bg-pink-300 text-pink-900 hover:bg-pink-400'}`}
                 disabled={selectedCount === 0}
                 onClick={() => setShowFundingModal(true)}
               >
@@ -460,33 +526,33 @@ export default function Home() {
 
       {/* Funding Modal */}
       {showFundingModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-2xl p-6 max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
-            <div className="flex justify-between items-center mb-6">
-              <h2 className="text-2xl font-bold text-blue-900">Setup Funding</h2>
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-pink-100 rounded-2xl p-4 sm:p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto border border-pink-300">
+            <div className="flex justify-between items-center mb-4 sm:mb-6">
+              <h2 className="text-xl sm:text-2xl font-bold text-pink-900">Setup Funding</h2>
               <button
                 onClick={() => setShowFundingModal(false)}
-                className="text-gray-400 hover:text-gray-600"
+                className="text-pink-400 hover:text-pink-600 p-1"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="feather feather-x"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
               </button>
             </div>
 
-            <div className="space-y-6">
+            <div className="space-y-4 sm:space-y-6">
               <div>
-                <h3 className="text-2xl font-semibold text-blue-900 mb-4">Target Funding</h3>
-                <div className="flex flex-col gap-4">
-                  <div className="flex gap-4">
+                <h3 className="text-xl sm:text-2xl font-semibold text-pink-900 mb-3 sm:mb-4">Target Funding</h3>
+                <div className="flex flex-col gap-3 sm:gap-4">
+                  <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
                     <input
                       type="number"
                       value={fundingAmount}
                       onChange={(e) => handleAmountChange(Number(e.target.value))}
-                      className="flex-1 px-4 py-2 border border-blue-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="flex-1 px-4 py-3 sm:py-2 border border-pink-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-300 bg-white text-pink-900 text-base"
                     />
                     <select 
                       value={selectedCurrency}
                       onChange={(e) => setSelectedCurrency(e.target.value)}
-                      className="px-4 py-2 border border-blue-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="px-4 py-3 sm:py-2 border border-pink-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-300 bg-white text-pink-900 text-base"
                     >
                       <option>NEAR</option>
                       <option>ETH</option>
@@ -498,10 +564,10 @@ export default function Home() {
                       <button
                         key={amount}
                         onClick={() => handlePresetClick(amount)}
-                        className={`px-4 py-2 rounded-lg border transition ${
+                        className={`px-3 sm:px-4 py-2 rounded-lg border transition text-sm sm:text-base ${
                           fundingAmount === amount 
-                            ? 'bg-blue-500 text-white border-blue-500' 
-                            : 'border-blue-200 text-blue-700 hover:bg-blue-50'
+                            ? 'bg-pink-600 text-white border-pink-600' 
+                            : 'border-pink-200 text-pink-900 hover:bg-pink-50 bg-white'
                         }`}
                       >
                         ${amount.toLocaleString()}
@@ -516,9 +582,9 @@ export default function Home() {
                       step="100"
                       value={fundingAmount}
                       onChange={(e) => handleAmountChange(Number(e.target.value))}
-                      className="w-full h-2 bg-blue-100 rounded-lg appearance-none cursor-pointer accent-blue-500"
+                      className="w-full h-2 bg-pink-200 rounded-lg appearance-none cursor-pointer accent-pink-500"
                     />
-                    <div className="flex justify-between text-xs text-gray-400 mt-1">
+                    <div className="flex justify-between text-xs text-pink-400 mt-1">
                       <span>$100</span>
                       <span>$10,000</span>
                     </div>
@@ -527,31 +593,29 @@ export default function Home() {
               </div>
 
               <div>
-                <h3 className="text-2xl font-semibold text-blue-900 mb-4">Funding Strategy</h3>
-                <div className="space-y-3">
+                <h3 className="text-xl sm:text-2xl font-semibold text-pink-900 mb-3 sm:mb-4">Funding Strategy</h3>
+                <div className="space-y-2 sm:space-y-3">
                   {FUND_METHODS.map((method) => (
-                    <label key={method.key} className="flex items-center gap-3 p-4 border border-blue-200 rounded-lg hover:bg-blue-50 cursor-pointer">
-                      <input type="radio" name="strategy" className="w-4 h-4 text-blue-600" />
-                      <div className="text-2xl">{method.icon}</div>
-                      <div>
-                        <div className="font-medium text-blue-900">{method.title}</div>
-                        <div className="text-sm text-gray-500">{method.desc}</div>
+                    <label key={method.key} className="flex items-start gap-3 p-3 sm:p-4 border border-pink-200 rounded-lg hover:bg-pink-50 cursor-pointer bg-white">
+                      <input type="radio" name="strategy" className="w-4 h-4 text-pink-600 mt-1 flex-shrink-0" />
+                      <div className="text-xl sm:text-2xl flex-shrink-0">{method.icon}</div>
+                      <div className="flex-1 min-w-0">
+                        <div className="font-medium text-pink-900 text-sm sm:text-base">{method.title}</div>
+                        <div className="text-xs sm:text-sm text-pink-400 mt-1">{method.desc}</div>
                       </div>
                     </label>
                   ))}
                 </div>
               </div>
 
-              <div className="flex justify-end">
+              <div className="flex justify-center sm:justify-end pt-2">
                 <button
                   onClick={handleConfirmSetup}
                   disabled={isSettingUp}
-                  className={`px-6 py-2 rounded-lg text-white font-medium transition ${
-                    isSettingUp ? 'bg-blue-400' : 'bg-blue-600 hover:bg-blue-700'
-                  }`}
+                  className={`px-6 py-3 sm:py-2 rounded-lg text-white font-medium transition w-full sm:w-auto ${isSettingUp ? 'bg-pink-400' : 'bg-pink-600 hover:bg-pink-700'}`}
                 >
                   {isSettingUp ? (
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2 justify-center">
                       <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                         <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                         <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
@@ -559,7 +623,7 @@ export default function Home() {
                       Setting up...
                     </div>
                   ) : setupSuccess ? (
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2 justify-center">
                       <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="feather feather-check"><polyline points="20 6 9 17 4 12"></polyline></svg>
                       Setup Successful!
                     </div>
@@ -576,21 +640,32 @@ export default function Home() {
       {/* Modal for project/campaign details */}
       {modalOpen && modalData && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 p-4">
-          <div className="bg-white rounded-2xl shadow-lg border border-gray-100 max-w-lg w-full max-h-[90vh] overflow-y-auto p-8 relative">
+          <div className="bg-pink-100 rounded-2xl shadow-lg border border-pink-300 max-w-lg w-full max-h-[90vh] overflow-y-auto p-4 sm:p-8 relative">
             <button
-              className="absolute top-4 right-4 text-3xl text-blue-500 hover:text-blue-700"
+              className="absolute top-3 right-3 sm:top-4 sm:right-4 text-2xl sm:text-3xl text-pink-400 hover:text-pink-600 p-1"
               onClick={() => setModalOpen(false)}
               aria-label="Close"
             >
               &times;
             </button>
-            <div className="flex items-center gap-4 mb-4">
-              <img src={modalData.image || modalData.logo} alt={modalData.name} className="w-14 h-14 rounded-full border-2 border-blue-200 object-cover" />
-              <div>
-                <div className="text-2xl font-bold text-blue-900 flex items-center gap-2">{modalData.name}</div>
+            
+            {modalData.type === 'campaign' && modalData.cover_image_url && (
+              <img 
+                src={modalData.cover_image_url} 
+                alt={`${modalData.name} cover image`}
+                className="w-full h-40 object-cover rounded-lg mb-4"
+              />
+            )}
+
+            <div className="flex items-start gap-3 sm:gap-4 mb-4 pr-8 sm:pr-0">
+              <img src={modalData.image || modalData.recipient_image || modalData.logo} alt={modalData.name} className="w-12 h-12 sm:w-14 sm:h-14 rounded-full border-2 border-pink-300 object-cover flex-shrink-0" />
+              <div className="flex-1 min-w-0">
+                <div className="text-lg sm:text-2xl font-bold text-pink-900 flex items-center gap-2 mb-2">
+                  <span className="truncate">{modalData.name}</span>
+                </div>
                 {/* Social/Campaign URLs */}
                 {modalData.socialUrl && typeof modalData.socialUrl === 'object' && (
-                  <div className="flex gap-2 mt-1">
+                  <div className="flex gap-2 mb-2">
                     {Object.entries(modalData.socialUrl).map(([type, url]) => (
                       typeof url === 'string' && url ? (
                         <a
@@ -598,26 +673,26 @@ export default function Home() {
                           href={formatSocialUrl(type, url)}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="text-blue-500 hover:text-blue-700 text-xl"
+                          className="text-indigo-400 hover:text-indigo-300 text-lg sm:text-xl p-1"
                           title={type.charAt(0).toUpperCase() + type.slice(1)}
                         >
                           {type === 'twitter' && (
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="feather feather-twitter"><path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"></path></svg>
-                          )}
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="feather feather-twitter"><path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"></path></svg>
+                        )}
                           {type === 'github' && (
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="feather feather-github"><path d="M12 2C6.48 2 2 6.58 2 12.26c0 4.5 2.87 8.32 6.84 9.67.5.09.68-.22.68-.48 0-.24-.01-.87-.01-1.7-2.78.62-3.37-1.36-3.37-1.36-.45-1.18-1.1-1.5-1.1-1.5-.9-.63.07-.62.07-.62 1 .07 1.53 1.05 1.53 1.05.89 1.56 2.34 1.11 2.91.85.09-.66.35-1.11.63-1.37-2.22-.26-4.56-1.14-4.56-5.07 0-1.12.39-2.03 1.03-2.75-.1-.26-.45-1.3.1-2.7 0 0 .84-.28 2.75 1.05A9.38 9.38 0 0 1 12 6.84c.85.004 1.71.12 2.51.35 1.91-1.33 2.75-1.05 2.75-1.05.55 1.4.2 2.44.1 2.7.64.72 1.03 1.63 1.03 2.75 0 3.94-2.34 4.81-4.57 5.07.36.32.68.94.68 1.9 0 1.37-.01 2.47-.01 2.81 0 .27.18.58.69.48A10.01 10.01 0 0 0 22 12.26C22 6.58 17.52 2 12 2z"></path></svg>
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="feather feather-github"><path d="M12 2C6.48 2 2 6.58 2 12.26c0 4.5 2.87 8.32 6.84 9.67.5.09.68-.22.68-.48 0-.24-.01-.87-.01-1.7-2.78.62-3.37-1.36-3.37-1.36-.45-1.18-1.1-1.5-1.1-1.5-.9-.63.07-.62.07-.62 1 .07 1.53 1.05 1.53 1.05.89 1.56 2.34 1.11 2.91.85.09-.66.35-1.11.63-1.37-2.22-.26-4.56-1.14-4.56-5.07 0-1.12.39-2.03 1.03-2.75-.1-.26-.45-1.3.1-2.7 0 0 .84-.28 2.75 1.05A9.38 9.38 0 0 1 12 6.84c.85.004 1.71.12 2.51.35 1.91-1.33 2.75-1.05 2.75-1.05.55 1.4.2 2.44.1 2.7.64.72 1.03 1.63 1.03 2.75 0 3.94-2.34 4.81-4.57 5.07.36.32.68.94.68 1.9 0 1.37-.01 2.47-.01 2.81 0 .27.18.58.69.48A10.01 10.01 0 0 0 22 12.26C22 6.58 17.52 2 12 2z"></path></svg>
                           )}
                           {type === 'website' && (
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="feather feather-globe"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="feather feather-globe"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
                           )}
                           {type === 'telegram' && (
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="feather feather-telegram">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="feather feather-telegram">
                               <path d="M22 2L11 13"/>
                               <path d="M22 2L15 22L11 13L2 9L22 2Z"/>
-                            </svg>
-                          )}
+                          </svg>
+                        )}
                           {type !== 'twitter' && type !== 'github' && type !== 'website' && type !== 'telegram' && <span>{type.charAt(0).toUpperCase()}</span>}
-                        </a>
+                      </a>
                       ) : null
                     ))}
                   </div>
@@ -629,10 +704,10 @@ export default function Home() {
                       href={modalData.campaignUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium"
+                      className="inline-flex items-center gap-2 px-3 sm:px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors text-sm font-medium"
                       title="View Campaign on Potlock"
                     >
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="feather feather-external-link">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="feather feather-external-link">
                         <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
                         <polyline points="15 3 21 3 21 9"></polyline>
                         <line x1="10" y1="14" x2="21" y2="3"></line>
@@ -643,34 +718,51 @@ export default function Home() {
                 )}
               </div>
             </div>
-            <div className="bg-blue-50/60 rounded-xl p-4 text-blue-900 text-base mb-6">
+            <div className="bg-white rounded-xl p-3 sm:p-4 text-pink-800 text-sm sm:text-base mb-4 sm:mb-6 leading-relaxed">
               {modalData.description}
             </div>
-            <div className="bg-blue-50/60 rounded-xl p-4">
-              <div className="flex items-center gap-2 mb-2">
-                <span className="font-bold text-blue-900 text-lg">WEIGHTING</span>
-                <span className="inline-flex items-center px-2 py-0.5 rounded-full border border-blue-200 bg-white text-blue-700 font-semibold text-base ml-2">
+            {modalData.type === 'campaign' && (
+              <div className="bg-white rounded-xl p-3 sm:p-4 mb-4 sm:mb-6 space-y-2">
+                <div>
+                  <div className="text-xs text-pink-400 font-semibold">OWNER</div>
+                  <div className="text-sm text-pink-800 truncate">{modalData.owner}</div>
+                </div>
+                <div>
+                  <div className="text-xs text-pink-400 font-semibold">RECIPIENT</div>
+                  <div className="flex items-center gap-2 text-sm text-pink-800 truncate">
+                    {modalData.recipient_image && (
+                      <img src={modalData.recipient_image} alt="Recipient profile" className="w-7 h-7 rounded-full border border-pink-300 object-cover" />
+                    )}
+                    <span>{modalData.recipient}</span>
+                  </div>
+                </div>
+              </div>
+            )}
+            <div className="bg-white rounded-xl p-3 sm:p-4">
+              <div className="flex items-center gap-2 mb-3">
+                <span className="font-bold text-pink-900 text-base sm:text-lg">WEIGHTING</span>
+                <span className="inline-flex items-center px-2 py-0.5 rounded-full border border-pink-200 bg-pink-50 text-pink-800 font-semibold text-base ml-2">
                   {modalData.weightingScore !== undefined ? (modalData.weightingScore * 100).toFixed(2) + '%' : '-'}
                 </span>
               </div>
-              <div className="flex items-center gap-2 mb-2">
-                <span className="font-bold text-blue-900 text-lg">SCORE</span>
-                <span className="inline-flex items-center px-2 py-0.5 rounded-full border border-blue-200 bg-white text-blue-700 font-semibold text-base ml-2">
+              <div className="flex items-center gap-2 mb-3">
+                <span className="font-bold text-pink-900 text-base sm:text-lg">SCORE</span>
+                <span className="inline-flex items-center px-2 py-0.5 rounded-full border border-pink-200 bg-pink-50 text-pink-800 font-semibold text-base ml-2">
                   {modalData.overallScore !== undefined ? modalData.overallScore.toFixed(2) : '-'}
                 </span>
               </div>
-              <div className="grid grid-cols-3 gap-4 mt-2">
-                <div className="rounded-xl border border-blue-200 p-4 text-center">
-                  <div className="text-xs text-blue-400 font-semibold mb-1">RELEVANCE</div>
-                  <div className="text-xl font-bold text-blue-900">{modalData.evaluationScores?.relevance !== undefined ? modalData.evaluationScores.relevance.toFixed(2) : '-'} /10</div>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 mt-3">
+                <div className="rounded-xl border border-pink-200 p-3 sm:p-4 text-center">
+                  <div className="text-xs text-pink-400 font-semibold mb-1">RELEVANCE</div>
+                  <div className="text-lg sm:text-xl font-bold text-pink-900">{modalData.evaluationScores?.relevance !== undefined ? modalData.evaluationScores.relevance.toFixed(2) : '-'} /10</div>
                 </div>
-                <div className="rounded-xl border border-blue-200 p-4 text-center">
-                  <div className="text-xs text-blue-400 font-semibold mb-1">IMPACT</div>
-                  <div className="text-xl font-bold text-blue-900">{modalData.evaluationScores?.impact !== undefined ? modalData.evaluationScores.impact.toFixed(2) : '-'} /10</div>
+                <div className="rounded-xl border border-pink-200 p-3 sm:p-4 text-center">
+                  <div className="text-xs text-pink-400 font-semibold mb-1">IMPACT</div>
+                  <div className="text-lg sm:text-xl font-bold text-pink-900">{modalData.evaluationScores?.impact !== undefined ? modalData.evaluationScores.impact.toFixed(2) : '-'} /10</div>
                 </div>
-                <div className="rounded-xl border border-blue-200 p-4 text-center">
-                  <div className="text-xs text-blue-400 font-semibold mb-1">FUNDING NEEDS</div>
-                  <div className="text-xl font-bold text-blue-900">{modalData.evaluationScores?.funding !== undefined ? modalData.evaluationScores.funding.toFixed(2) : '-'} /10</div>
+                <div className="rounded-xl border border-pink-200 p-3 sm:p-4 text-center">
+                  <div className="text-xs text-pink-400 font-semibold mb-1">FUNDING NEEDS</div>
+                  <div className="text-lg sm:text-xl font-bold text-pink-900">{modalData.evaluationScores?.funding !== undefined ? modalData.evaluationScores.funding.toFixed(2) : '-'} /10</div>
                 </div>
               </div>
             </div>
@@ -679,9 +771,9 @@ export default function Home() {
       )}
 
       {/* Soft background decorations */}
-      <div className="absolute left-0 top-0 w-64 h-64 bg-purple-100 rounded-full opacity-30 blur-2xl -z-10" />
-      <div className="absolute right-0 top-32 w-40 h-40 bg-pink-100 rounded-full opacity-20 blur-2xl -z-10" />
-      <div className="absolute left-1/2 bottom-0 w-80 h-32 bg-primary opacity-10 blur-3xl -z-10" />
+      <div className="absolute left-0 top-0 w-64 h-64 bg-indigo-900/20 rounded-full opacity-30 blur-2xl -z-10" />
+      <div className="absolute right-0 top-32 w-40 h-40 bg-purple-900/20 rounded-full opacity-20 blur-2xl -z-10" />
+      <div className="absolute left-1/2 bottom-0 w-80 h-32 bg-indigo-600/10 blur-3xl -z-10" />
 
       <style jsx global>{`
         @keyframes fadeIn {
