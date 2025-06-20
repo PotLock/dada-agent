@@ -319,10 +319,10 @@ export default function Home() {
       {/* Hero Section */}
       <section className={`w-full flex flex-col items-center justify-center bg-gradient-to-b from-pink-100 to-transparent transition-all duration-700 px-4 ${showResults ? 'pt-24 sm:pt-20 pb-6' : 'h-screen'}`}>
         <div className={`flex flex-col items-center transition-all duration-700 w-full max-w-2xl ${showResults ? 'mt-0 scale-90' : 'mt-[-10vh] scale-100'}`}>
-          <h1 className={`text-3xl sm:text-4xl md:text-5xl font-extrabold text-center text-pink-900 mb-4 sm:mb-6 transition-all duration-700 leading-tight ${showResults ? 'scale-90' : 'scale-100'}`}>
+          <h1 className={`text-3xl sm:text-4xl md:text-5xl font-extrabold text-center text-pink-900 mb-2 sm:mb-3 transition-all duration-700 leading-tight ${showResults ? 'scale-90' : 'scale-100'}`}>
             AI-Powered Donations, Real-World Impact <span className="inline-block align-middle">🤖</span>
           </h1>
-          <p className={`text-base sm:text-lg md:text-xl text-center text-pink-800 mb-6 sm:mb-8 px-4 transition-all duration-700 leading-relaxed ${showResults ? 'opacity-0' : 'opacity-100'}`}>
+          <p className={`text-base sm:text-lg md:text-xl text-center text-pink-800 mb-3 sm:mb-4 px-4 transition-all duration-700 leading-relaxed ${showResults ? 'opacity-0 hidden' : 'opacity-100'}`}>
             Automate your contributions to impactful projects and campaigns on NEAR and beyond.
           </p>
           <form
